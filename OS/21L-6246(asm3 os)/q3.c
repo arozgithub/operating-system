@@ -1,0 +1,78 @@
+#include <pthread.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <semaphore.h>
+
+sem_t semaphore_a;
+sem_t semaphore_b;
+sem_t semaphore_c;
+int count=0;
+int x=3;
+int y=0;
+int z=0;
+int a=0;
+int b=0;
+int c=0;
+void *threadFunction1(void *arg) {
+
+while(a<10){
+count=0;
+while(count!=3){	 
+sem_wait(&semaphore_a);
+printf("a");
+count=count+1;
+ }
+  sem_post(&semaphore_c);
+  a++;
+  }
+  pthread_exit(NULL);
+}
+void *threadFunction2(void *arg) {
+
+
+while(b<10){
+sem_wait(&semaphore_b);
+printf("b");
+sem_post(&semaphore_a);
+sem_post(&semaphore_a);
+sem_post(&semaphore_a);
+b++;
+}
+pthread_exit(NULL);
+}
+void *threadFunction3(void *arg) {
+
+
+ while(c<10){
+sem_wait(&semaphore_c);
+
+printf("c");
+  sem_post(&semaphore_b);  
+  c++;
+ }
+pthread_exit(NULL);
+}
+int main() {
+    
+
+    pthread_t t1;
+     pthread_t t2;
+      pthread_t t3;
+    // initializing semaphores with values
+    // a with 1 and b and c with 0
+    // second parameter is whether semaphores are shared or not 0 means no  
+    sem_init(&semaphore_a, 0, x);
+    sem_init(&semaphore_b, 0, y);
+    sem_init(&semaphore_c, 0, z);
+    
+  pthread_create(&t1, NULL, threadFunction1, NULL);
+  pthread_create(&t2, NULL, threadFunction2, NULL);
+  pthread_create(&t3, NULL, threadFunction3, NULL);
+
+    pthread_join(t1, NULL);
+    pthread_join(t2, NULL);
+    pthread_join(t3, NULL);
+   
+    return 0;
+}
+
